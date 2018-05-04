@@ -1,0 +1,70 @@
+1 - Identifique as colunas que compõe a chave primária de cada tabela.
+
+Tabela Customer PK = IdCustomer
+Tabela AddressType PK = CdAddressType
+Tabela CustomerAddress FK IdCustomer + FK CdAddressType = PK
+
+2 ­- Utilizando o comando INSERT de SQL, crie os scripts para cadastrar o cliente abaixo:
+
+Joãozinho Silva -­- 888.777.666-­-55
+Endereço Residencial: Rua das Flores, 1. CEP: 01234-­-567
+Endereço Comercial: Rua das Pedras, 100 Conjunto 200. CEP: 01234-­567
+
+3­ - Quantos endereços diferentes podem ser cadastrado para um cliente?
+
+R.: Um cliente pode ter um endereço do tipo R(Residêncial), um do tipo C(Comercial) e um do tipo O(Outros).
+
+4 - ­Dado um CPF, qual seria o passo a passo para excluir um cliente da nossa base de dados?
+
+CREATE DATABASE db_testeSQL;
+
+GO
+USE db_testeSQL;
+
+CREATE TABLE Customer(
+	IdCustomer integer PRIMARY KEY NOT NULL IDENTITY(1,1),
+	NmCustomer varchar(255) NOT NULL,
+	CpfCnpj numeric NOT NULL
+);
+
+CREATE TABLE AddressType(
+	CdAddressType char(1) PRIMARY KEY NOT NULL,
+	AddressType varchar(50) NOT NULL
+);
+
+CREATE TABLE CustomerAddress(
+	IdCustomer integer,
+	CdAddressType char(1),
+	Street varchar(255) NOT NULL,
+	Lot integer NOT NULL,
+	Reference varchar(255) NULL,
+	ZipCode varchar(50) NOT NULL
+
+	CONSTRAINT FK_IdCustomer FOREIGN KEY (IdCustomer) REFERENCES Customer(IdCustomer),
+	CONSTRAINT FK_CdAddressType FOREIGN KEY (CdAddressType) REFERENCES AddressType(CdAddressType),
+	CONSTRAINT PK_CustomerAddress PRIMARY KEY (IdCustomer, CdAddressType)
+);
+
+INSERT INTO AddressType(CdAddressType, AddressType)
+ VALUES 
+	('R', 'Residêncial'),
+	('C', 'Comercial'),
+	('O', 'Outros');
+
+SELECT * FROM AddressType;
+
+INSERT INTO Customer(NmCustomer, CpfCnpj)
+VALUES
+	('Joãozinho Silva', 88877766655);
+
+SELECT SCOPE_IDENTITY() AS IdLastCustomer;
+
+INSERT INTO CustomerAddress(IdCustomer, CdAddressType, Street, Lot, Reference, ZipCode)
+VALUES
+	(1, 'R','Rua das Flores',1,null,'01234-567'),
+	(1, 'C','Rua das Pedras',100,'Conjuntos 200','01234-567');
+
+SELECT * FROM CustomerAddress;
+
+DELETE FROM CustomerAddress WHERE IdCustomer = (SELECT IdCustomer FROM Customer WHERE CpfCnpj = 88877766655);
+DELETE FROM Customer WHERE CpfCnpj = 88877766655;
